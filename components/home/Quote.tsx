@@ -1,8 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useHomepageConfig } from "@/hooks/usePublicData";
 
 export default function Quote() {
+  const { data: config } = useHomepageConfig();
+  const section = config?.quote;
+
+  const visible = section?.visible ?? true;
+  const quoteText = section?.text || "I don't paint landscapes as they appear. I paint how they are remembered.";
+  const attribution = section?.attribution || "Ashbin Kafle";
+
+  if (!visible) return null;
+
   return (
     <section className="py-24 lg:py-32">
       <div className="mx-auto max-w-[700px] px-6 text-center">
@@ -29,13 +39,12 @@ export default function Quote() {
 
           <blockquote>
             <p className="text-2xl leading-[1.3] tracking-[-0.02em] text-foreground/85 font-heading sm:text-3xl lg:text-4xl">
-              &ldquo;I don&rsquo;t paint landscapes as they appear.{<br />}
-              I paint how they are remembered.&rdquo;
+              &ldquo;{quoteText}&rdquo;
             </p>
           </blockquote>
 
           <figcaption className="text-xs uppercase tracking-[0.3em] text-foreground/45 font-heading">
-            — Ashbin Kafle
+            — {attribution}
           </figcaption>
         </motion.figure>
       </div>

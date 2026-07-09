@@ -4,15 +4,12 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-
-const availableItems = [
-  "Commissions",
-  "Exhibitions",
-  "Collaborations",
-  "Landscape Projects",
-];
+import { useHomepageConfig, useArtworkById } from "@/hooks/usePublicData";
+import Shimmer from "@/components/ui/Shimmer";
 
 export default function ContactPreview() {
+  const { data: config } = useHomepageConfig();
+  const section = config?.contact_preview;
   const imageRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -21,6 +18,23 @@ export default function ContactPreview() {
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [-8, 8]);
+
+  const artworkId = section?.image_artwork_id ?? null;
+  const { data: contactArtwork } = useArtworkById(artworkId);
+
+  const imageUrl = contactArtwork?.image_url || section?.image_url || "";
+  const imageLoading = !contactArtwork && artworkId !== null;
+  const imageAlt = contactArtwork?.image_alt || (contactArtwork?.title || "Artist working on a landscape painting in natural light");
+  const visible = section?.visible ?? true;
+  const subtitle = section?.subtitle || "Get in Touch";
+  const title = section?.title || "Let's Create\nSomething Together";
+  const text = section?.text || "Available for commissions, exhibitions, collaborations, and landscape projects. Currently accepting new enquiries and would welcome a conversation about your project.";
+  const availableFor = section?.available_for || "Commissions, Exhibitions, Collaborations, Landscape Projects";
+  const buttonText = section?.button_text || "Get in Touch";
+  const buttonLink = section?.button_link || "/contact";
+  const availableItems = availableFor.split(",").map((s) => s.trim()).filter(Boolean);
+
+  if (!visible) return null;
 
   return (
     <section className="border-t border-border/70 py-24 lg:py-32">
@@ -39,16 +53,18 @@ export default function ContactPreview() {
               style={{ y }}
               className="h-full w-full overflow-hidden rounded-[12px] transition-transform duration-[600ms] ease-[0.22,1,0.36,1] hover:scale-[1.01]"
             >
-              <Image
-                src="https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=1000&q=80&auto=format&fit=crop"
-                alt="Artist working on a landscape painting in natural light"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlYWY1ZWEiLz48L3N2Zz4="
-              />
+              {imageLoading ? (
+                <Shimmer className="h-full w-full" />
+              ) : imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={imageAlt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  loading="lazy"
+                />
+              ) : null}
               <div className="pointer-events-none absolute inset-0 rounded-[12px] ring-1 ring-inset ring-black/5" />
             </motion.div>
           </motion.div>
@@ -62,16 +78,13 @@ export default function ContactPreview() {
             className="max-w-[520px]"
           >
             <p className="text-xs uppercase tracking-[0.35em] text-foreground/50 font-heading mb-4">
-              Get in Touch
+              {subtitle}
             </p>
             <h2 className="text-3xl font-heading leading-[1.02] tracking-[-0.035em] text-foreground sm:text-4xl">
-              Let&rsquo;s Create<br />
-              Something Together
+              {title}
             </h2>
             <p className="mt-6 text-base leading-8 text-foreground/75 sm:text-lg">
-              Available for commissions, exhibitions, collaborations, and
-              landscape projects. Ashbin is currently accepting new enquiries
-              and would welcome a conversation about your project.
+              {text}
             </p>
 
             <div className="mt-8 space-y-4">
@@ -92,10 +105,10 @@ export default function ContactPreview() {
 
             <div className="mt-10">
               <Link
-                href="/contact"
+                href={buttonLink}
                 className="inline-flex items-center rounded-full bg-[#A8E4A0] px-7 py-3 text-sm uppercase tracking-[0.24em] text-[#222222] font-heading transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96d88e] active:scale-[0.98]"
               >
-                Get in Touch
+                {buttonText}
               </Link>
             </div>
           </motion.div>

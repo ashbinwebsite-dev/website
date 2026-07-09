@@ -1,14 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
-import ContactImage from "./ContactImage";
+import Image from "next/image";
 import ContactForm from "./ContactForm";
+import { useContactConfig, useArtworkById } from "@/hooks/usePublicData";
+import Shimmer from "@/components/ui/Shimmer";
 
 export default function ContactHero() {
+  const { data: config } = useContactConfig();
+  const { data: contactArtwork } = useArtworkById(config?.image_artwork_id ?? null);
+
+  const imageUrl = contactArtwork?.image_url || "";
+  const imageAlt = contactArtwork?.image_alt || (contactArtwork?.title || "Contact");
+  const imageLoading = !contactArtwork && !!config?.image_artwork_id;
+  const subtitle = config?.subtitle || "Contact";
+  const title = config?.title || "Get in Touch";
+  const bodyText = config?.body_text || "Available for commissions, exhibitions, collaborations, workshops, and landscape projects.";
+
   return (
     <section className="min-h-[calc(100vh-80px)] flex items-center py-12 lg:py-16">
       <div className="w-full mx-auto px-6 lg:px-10 max-w-[1440px]">
-        <div className="grid gap-10  lg:grid-cols-[45%_55%] lg:items-center">
+        <div className="grid gap-10 lg:grid-cols-[45%_55%] lg:items-center">
           {/* Left — Image */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -16,7 +28,21 @@ export default function ContactHero() {
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="relative h-full w-full"
           >
-            <ContactImage />
+            <div className="relative h-[50vh] lg:h-[70vh] overflow-hidden rounded-[12px] bg-[#eaf5ea]">
+              {imageLoading ? (
+                <Shimmer className="absolute inset-0" />
+              ) : imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={imageAlt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 45vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : null}
+              <div className="pointer-events-none absolute inset-0 rounded-[12px] ring-1 ring-inset ring-black/5" />
+            </div>
           </motion.div>
 
           {/* Right — Content */}
@@ -40,7 +66,7 @@ export default function ContactHero() {
               }}
               className="text-xs uppercase tracking-[0.35em] text-foreground/60 font-heading mb-4"
             >
-              Contact
+              {subtitle}
             </motion.p>
 
             <motion.h1
@@ -53,7 +79,7 @@ export default function ContactHero() {
               }}
               className="text-4xl sm:text-5xl lg:text-[3.25rem] font-heading leading-[0.98] tracking-[-0.04em] text-foreground"
             >
-              Get in Touch
+              {title}
             </motion.h1>
 
             <motion.p
@@ -66,10 +92,7 @@ export default function ContactHero() {
               }}
               className="mt-6 text-base leading-8 text-foreground/75 max-w-[500px]"
             >
-              Available for commissions, exhibitions, collaborations, workshops,
-              and landscape projects. I enjoy working with individuals,
-              galleries, brands, and creative studios who value thoughtful
-              visual storytelling.
+              {bodyText}
             </motion.p>
 
             <motion.div

@@ -1,8 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useAboutConfig } from "@/hooks/usePublicData";
 
 export default function QuoteSection() {
+  const { data: config } = useAboutConfig();
+
+  const quoteText = config?.quote_text || "I don't paint places exactly as they are. I paint the feeling of standing there.";
+  const attribution = config?.quote_attribution || "Ashbin Kafle";
+
   return (
     <section className="py-28 lg:py-40">
       <div className="mx-auto max-w-[700px] px-6 text-center">
@@ -29,13 +35,12 @@ export default function QuoteSection() {
 
           <blockquote>
             <p className="text-2xl leading-[1.3] tracking-[-0.02em] text-foreground/85 font-heading sm:text-3xl lg:text-4xl">
-              &ldquo;I don&rsquo;t paint places exactly as they are.{<br />}
-              I paint the feeling of standing there.&rdquo;
+              &ldquo;{quoteText}&rdquo;
             </p>
           </blockquote>
 
           <figcaption className="text-xs uppercase tracking-[0.3em] text-foreground/45 font-heading">
-            — Ashbin Kafle
+            — {attribution}
           </figcaption>
         </motion.figure>
       </div>

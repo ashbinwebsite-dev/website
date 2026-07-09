@@ -1,36 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useHomepageConfig } from "@/hooks/usePublicData";
+import type { ArtworkRow } from "@/types/database/database";
 
-const featured = [
-  {
-    src: "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&q=80&auto=format&fit=crop",
-    alt: "Abstract landscape painting with warm earth tones",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=600&q=80&auto=format&fit=crop",
-    alt: "Expressive landscape painting with bold brushstrokes",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1549490349-8643362247b5?w=600&q=80&auto=format&fit=crop",
-    alt: "Modern abstract landscape painting",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80&auto=format&fit=crop",
-    alt: "Minimalist landscape painting",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1531913764164-f85c3e33d8d2?w=600&q=80&auto=format&fit=crop",
-    alt: "Contemporary landscape art",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1561835490-5b266f96f5fb?w=600&q=80&auto=format&fit=crop",
-    alt: "Abstract terrain painting in muted greens",
-  },
-];
 
 const itemAnimation = {
   hidden: { opacity: 0, y: 20 },
@@ -46,6 +24,54 @@ const itemAnimation = {
 };
 
 export default function FeaturedWorks() {
+  const { data: config } = useHomepageConfig();
+  const section = config?.featured_works;
+
+  const [artworks, setArtworks] = useState<{ src: string; alt: string }[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!section?.artwork_ids || section.artwork_ids.length === 0) {
+      setArtworks([]);
+      setLoaded(true);
+      return;
+    }
+
+    async function load() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("artworks")
+        .select("id, image_url, image_alt, title")
+        .in("id", section.artwork_ids);
+
+      if (data && data.length > 0) {
+        // Sort by the order of artwork_ids
+        const sorted = section.artwork_ids
+          .map((id) => data.find((a) => a.id === id))
+          .filter(Boolean)
+          .map((a) => ({
+            src: (a as ArtworkRow).image_url,
+            alt:
+              (a as ArtworkRow).image_alt ||
+              (a as ArtworkRow).title ||
+              "Featured artwork",
+          }));
+        setArtworks(sorted);
+      }
+      setLoaded(true);
+    }
+    load();
+  }, [section?.artwork_ids]);
+
+  const images = loaded ? artworks : [];
+  const subtitle = section?.subtitle || "Selected Works";
+  const title = section?.title || "Featured Paintings";
+  const viewText = section?.view_all_button_text || "View Full Portfolio";
+  const viewLink = section?.view_all_button_link || "/portfolio";
+  const visible = section?.visible ?? true;
+
+  if (!visible) return null;
+
   return (
     <section className="py-28 lg:py-36">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
@@ -57,15 +83,15 @@ export default function FeaturedWorks() {
           className="mb-14 flex flex-col gap-2"
         >
           <p className="text-xs uppercase tracking-[0.35em] text-foreground/50 font-heading">
-            Selected Works
+            {subtitle}
           </p>
           <h2 className="text-3xl font-heading leading-tight tracking-[-0.04em] text-foreground sm:text-4xl">
-            Featured Paintings
+            {title}
           </h2>
         </motion.div>
 
         <div className="columns-2 gap-4 sm:columns-3 lg:gap-5">
-          {featured.map((item, i) => (
+          {images.map((item, i) => (
             <motion.div
               key={i}
               custom={i}
@@ -76,7 +102,7 @@ export default function FeaturedWorks() {
               className="mb-4 break-inside-avoid sm:mb-5"
             >
               <Link
-                href="/portfolio"
+                href={viewLink}
                 className="group relative block overflow-hidden rounded-[12px] bg-[#eaf5ea]"
               >
                 <div className="relative overflow-hidden rounded-[12px] transition-all duration-[600ms] ease-[0.22,1,0.36,1] group-hover:scale-[1.02] group-hover:brightness-[1.08]">
@@ -105,10 +131,10 @@ export default function FeaturedWorks() {
           className="mt-12 text-center"
         >
           <Link
-            href="/portfolio"
+            href={viewLink}
             className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.24em] text-foreground/70 font-heading transition-all duration-300 hover:text-foreground group"
           >
-            View Full Portfolio
+            {viewText}
             <ArrowUpRight
               size={14}
               className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"

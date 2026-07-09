@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useHomepageConfig, useArtworkById } from "@/hooks/usePublicData";
+import Shimmer from "@/components/ui/Shimmer";
 
 const container = {
   hidden: {},
@@ -21,21 +23,40 @@ const fadeUp = {
 };
 
 export default function Hero() {
+  const { data: config } = useHomepageConfig();
+  const hero = config?.hero;
+
+  const heroImageArtworkId = hero?.hero_image_artwork_id ?? null;
+  const { data: heroArtwork } = useArtworkById(heroImageArtworkId);
+
+  const heroImageUrl = heroArtwork?.image_url || hero?.hero_image_url || "";
+  const isLoading = !heroArtwork && heroImageArtworkId !== null;
+  const headline = hero?.headline || "Artist";
+  const subheadline = hero?.subheadline || "Visual Storyteller";
+  const tagline = hero?.tagline || "Nature Observer";
+  const heroTagline = hero?.hero_tagline || "Painting quiet moments inspired by nature, memory, and light.";
+  const exploreText = hero?.explore_portfolio_button_text || "Explore Portfolio";
+  const exploreLink = hero?.explore_portfolio_button_link || "/portfolio";
+  const aboutText = hero?.about_button_text || "About the Artist";
+  const aboutLink = hero?.about_button_link || "/about";
+
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
-        <Image
-          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=85&auto=format&fit=crop"
-          alt="Expansive mountain landscape at golden hour"
-          fill
-          sizes="100vw"
-          className="object-cover"
-          priority
-          placeholder="blur"
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMyYzM4MmMiLz48L3N2Zz4="
-        />
-        <div className="absolute inset-0 bg-black/40" />
+        {isLoading ? (
+          <Shimmer className="h-full w-full" />
+        ) : heroImageUrl ? (
+          <Image
+            src={heroImageUrl}
+            alt="Hero background"
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-black/70" />
       </div>
 
       {/* Centered content */}
@@ -50,18 +71,15 @@ export default function Hero() {
             variants={fadeUp}
             className="text-5xl font-heading leading-[0.92] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl xl:text-8xl"
           >
-            Ashbin Kafle
+            {headline}
           </motion.h1>
 
           <motion.div variants={fadeUp} className="space-y-1 pt-1">
             <p className="text-xl font-heading tracking-[-0.02em] text-white/75 sm:text-2xl lg:text-3xl">
-              Artist
+              {subheadline}
             </p>
             <p className="text-lg font-heading tracking-[-0.02em] text-white/55 sm:text-xl lg:text-2xl">
-              Visual Storyteller
-            </p>
-            <p className="text-base font-heading tracking-[-0.02em] text-white/40 sm:text-lg lg:text-xl">
-              Nature Observer
+              {tagline}
             </p>
           </motion.div>
 
@@ -69,7 +87,7 @@ export default function Hero() {
             variants={fadeUp}
             className="mx-auto max-w-xl pt-2 text-base leading-7 text-white/70 sm:text-lg"
           >
-            Painting quiet moments inspired by nature, memory, and light.
+            {heroTagline}
           </motion.p>
 
           <motion.div
@@ -77,16 +95,16 @@ export default function Hero() {
             className="flex flex-wrap justify-center gap-4 pt-6"
           >
             <Link
-              href="/portfolio"
+              href={exploreLink}
               className="inline-flex items-center rounded-full bg-white/90 px-7 py-3 text-sm uppercase tracking-[0.24em] text-foreground font-heading transition-all duration-300 hover:bg-white hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              Explore Portfolio
+              {exploreText}
             </Link>
             <Link
-              href="/about"
-              className="inline-flex items-center rounded-full border  border-white/30 px-7 py-3 text-sm uppercase tracking-[0.24em] !text-white/90 font-heading transition-all duration-300 hover:border-white/60 hover:text-white hover:-translate-y-0.5 active:scale-[0.98]"
+              href={aboutLink}
+              className="inline-flex items-center rounded-full border border-white/30 px-7 py-3 text-sm uppercase tracking-[0.24em] !text-white/90 font-heading transition-all duration-300 hover:border-white/60 hover:text-white hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              About the Artist
+              {aboutText}
             </Link>
           </motion.div>
         </motion.div>

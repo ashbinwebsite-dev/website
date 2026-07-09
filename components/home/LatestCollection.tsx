@@ -1,34 +1,63 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useHomepageConfig } from "@/hooks/usePublicData";
+import type { ArtworkRow } from "@/types/database/database";
 
-const collection = [
-  {
-    src: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=700&q=80&auto=format&fit=crop",
-    alt: "Abstract landscape painting in warm tones",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1549490349-8643362247b5?w=700&q=80&auto=format&fit=crop",
-    alt: "Modern landscape art with bold color blocking",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=700&q=80&auto=format&fit=crop",
-    alt: "Expressive landscape painting",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1561835490-5b266f96f5fb?w=700&q=80&auto=format&fit=crop",
-    alt: "Contemporary abstract landscape in green tones",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?w=700&q=80&auto=format&fit=crop",
-    alt: "Minimal landscape painting in cool blues",
-  },
-];
 
 export default function LatestCollection() {
+  const { data: config } = useHomepageConfig();
+  const section = config?.latest_collection;
+
+  const [images, setImages] =
+    useState<{ src: string; alt: string }[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!section?.artwork_ids || section.artwork_ids.length === 0) {
+      setImages([]);
+      setLoaded(true);
+      return;
+    }
+
+    async function load() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("artworks")
+        .select("id, image_url, image_alt, title")
+        .in("id", section.artwork_ids);
+
+      if (data && data.length > 0) {
+        const sorted = section.artwork_ids
+          .map((id) => data.find((a) => a.id === id))
+          .filter(Boolean)
+          .map((a) => ({
+            src: (a as ArtworkRow).image_url,
+            alt:
+              (a as ArtworkRow).image_alt ||
+              (a as ArtworkRow).title ||
+              "Latest artwork",
+          }));
+        setImages(sorted);
+      }
+      setLoaded(true);
+    }
+    load();
+  }, [section?.artwork_ids]);
+
+  const subtitle = section?.subtitle || "Collection";
+  const title = section?.title || "Latest Works";
+  const viewText = section?.view_all_button_text || "View Collection";
+  const viewLink = section?.view_all_button_link || "/portfolio";
+  const visible = section?.visible ?? true;
+
+  if (!visible) return null;
+
   return (
     <section className="py-24 lg:py-32">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
@@ -40,21 +69,24 @@ export default function LatestCollection() {
           className="mb-10 flex flex-col gap-2"
         >
           <p className="text-xs uppercase tracking-[0.35em] text-foreground/50 font-heading">
-            Collection
+            {subtitle}
           </p>
           <h2 className="text-3xl font-heading leading-tight tracking-[-0.04em] text-foreground sm:text-4xl">
-            Latest Works
+            {title}
           </h2>
         </motion.div>
       </div>
 
       {/* Horizontal scroll gallery */}
-      <div className="overflow-x-auto pb-4 pl-6 lg:pl-10 scrollbar-none" style={{ scrollSnapType: "x mandatory" }}>
+      <div
+        className=" overflow-x-auto pb-4 pl-6 lg:pl-10 scrollbar-none"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
         <div
           className="flex gap-5 lg:gap-6"
           style={{ scrollSnapType: "x mandatory" }}
         >
-          {collection.map((item, i) => (
+          {images.map((item, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: 20 }}
@@ -65,13 +97,10 @@ export default function LatestCollection() {
                 delay: i * 0.04,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="relative h-[55vh] w-[75vw] flex-shrink-0 overflow-hidden rounded-[12px] bg-[#eaf5ea] sm:h-[60vh] sm:w-[60vw] lg:h-[70vh] lg:w-[45vw]"
+              className={`relative h-[55vh] w-[75vw] flex-shrink-0 overflow-hidden rounded-[12px] bg-[#eaf5ea] sm:h-[60vh] sm:w-[60vw] lg:h-[70vh] lg:w-[45vw]`}
               style={{ scrollSnapAlign: "start" }}
             >
-              <Link
-                href="/portfolio"
-                className="group block h-full w-full"
-              >
+              <Link href={viewLink} className="group block h-full w-full">
                 <div className="h-full w-full overflow-hidden rounded-[12px] transition-all duration-[600ms] ease-[0.22,1,0.36,1] group-hover:scale-[1.02] group-hover:brightness-[1.06]">
                   <Image
                     src={item.src}
@@ -103,10 +132,10 @@ export default function LatestCollection() {
           className="mt-10 text-center"
         >
           <Link
-            href="/portfolio"
+            href={viewLink}
             className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.24em] text-foreground/70 font-heading transition-all duration-300 hover:text-foreground group"
           >
-            View Collection
+            {viewText}
             <ArrowUpRight
               size={14}
               className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"

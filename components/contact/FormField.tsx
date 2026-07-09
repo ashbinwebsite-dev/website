@@ -6,7 +6,7 @@ import type { FieldError } from "react-hook-form";
 interface FormFieldProps {
   label: string;
   name: string;
-  type?: "text" | "email" | "textarea";
+  type?: "text" | "email" | "tel" | "textarea";
   placeholder?: string;
   autocomplete?: string;
   error?: FieldError;

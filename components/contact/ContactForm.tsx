@@ -9,14 +9,16 @@ import { Check } from "lucide-react";
 import FormField from "./FormField";
 import SubmitButton from "./SubmitButton";
 import ContactInfo from "./ContactInfo";
+import { createClient } from "@/lib/supabase/client";
 
 const contactSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
   email: z.string().email("Please enter a valid email address"),
-  subject: z.string().min(1, "Please enter a subject"),
+  number: z
+    .string()
+    .min(1, "Please enter your phone number")
+    .regex(/^[\d\s\-\+\(\)]+$/, "Please enter a valid phone number"),
   message: z.string().min(1, "Please enter your message"),
-  budget: z.string().optional(),
-  projectTimeline: z.string().optional(),
 });
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
@@ -49,25 +51,47 @@ export default function ContactForm() {
     defaultValues: {
       name: "",
       email: "",
-      subject: "",
+      number: "",
       message: "",
-      budget: "",
-      projectTimeline: "",
     },
   });
 
   const onSubmit = async (data: ContactFormValues) => {
     setSubmitStatus("loading");
 
-    // Simulate API call — replace with actual API integration
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Form data ready for API:", data);
+      // Save to Supabase messages table
+      const supabase = createClient();
+      const { error: dbError } = await supabase.from("messages").insert({
+        name: data.name,
+        email: data.email,
+        phone: data.number,
+        subject: "Website Enquiry",
+        message: data.message,
+      });
+
+      if (dbError) throw dbError;
+
+      // Send email notification via API
+      try {
+        await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            number: data.number,
+            message: data.message,
+          }),
+        });
+      } catch {
+        // Email notification is optional — don't block success if it fails
+        console.warn("Email notification failed, but message was saved.");
+      }
+
       setSubmitStatus("success");
       reset();
-
-      // Reset success state after a few seconds
-      setTimeout(() => setSubmitStatus("idle"), 4000);
+      setTimeout(() => setSubmitStatus("idle"), 5000);
     } catch {
       setSubmitStatus("error");
       setTimeout(() => setSubmitStatus("idle"), 4000);
@@ -142,10 +166,12 @@ export default function ContactForm() {
           variants={fieldAnimation}
         >
           <FormField
-            label="Subject"
-            placeholder="Commission, exhibition, collaboration…"
-            error={errors.subject}
-            {...register("subject")}
+            label="Phone Number"
+            type="tel"
+            placeholder="+44 7700 900000"
+            autocomplete="tel"
+            error={errors.number}
+            {...register("number")}
           />
         </motion.div>
 
@@ -163,34 +189,6 @@ export default function ContactForm() {
             {...register("message")}
           />
         </motion.div>
-
-        <motion.div
-          custom={4}
-          initial="hidden"
-          animate="visible"
-          variants={fieldAnimation}
-        >
-          <FormField
-            label="Budget (optional)"
-            placeholder="e.g. £2,000 – £5,000"
-            error={errors.budget}
-            {...register("budget")}
-          />
-        </motion.div>
-
-        <motion.div
-          custom={5}
-          initial="hidden"
-          animate="visible"
-          variants={fieldAnimation}
-        >
-          <FormField
-            label="Project Timeline (optional)"
-            placeholder="e.g. Within 3 months"
-            error={errors.projectTimeline}
-            {...register("projectTimeline")}
-          />
-        </motion.div>
       </div>
 
       {submitStatus === "error" && (
@@ -205,7 +203,7 @@ export default function ContactForm() {
       )}
 
       <motion.div
-        custom={6}
+        custom={4}
         initial="hidden"
         animate="visible"
         variants={fieldAnimation}

@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useAboutConfig } from "@/hooks/usePublicData";
 
-const items = [
+const fallbackItems = [
   "Commissions",
   "Collaborations",
   "Exhibitions",
@@ -11,6 +12,13 @@ const items = [
 ];
 
 export default function FinalCTA() {
+  const { data: config } = useAboutConfig();
+
+  const availableFor = config?.cta_available_for || "";
+  const items = availableFor ? availableFor.split(",").map((s) => s.trim()).filter(Boolean) : fallbackItems;
+  const buttonText = config?.cta_button_text || "Get in Touch";
+  const buttonLink = config?.cta_button_link || "/contact";
+
   return (
     <section className="border-t border-border/70 py-28 lg:py-36">
       <div className="mx-auto max-w-[720px] px-6 text-center">
@@ -50,10 +58,10 @@ export default function FinalCTA() {
 
           <div className="pt-4">
             <Link
-              href="/contact"
+              href={buttonLink}
               className="inline-flex items-center rounded-full bg-[#A8E4A0] px-8 py-3.5 text-sm uppercase tracking-[0.24em] text-[#222222] font-heading transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#96d88e] active:scale-[0.98]"
             >
-              Get in Touch
+              {buttonText}
             </Link>
           </div>
         </motion.div>

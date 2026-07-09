@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useExperience } from "@/hooks/usePublicData";
 
-const milestones = [
+const fallbackMilestones = [
   { year: "2020", label: "Started painting professionally" },
   { year: "2022", label: "First solo exhibition" },
   { year: "2023", label: "Landscape series — full collection" },
@@ -23,6 +24,13 @@ const itemAnimation = {
 };
 
 export default function Timeline() {
+  const { data: experience } = useExperience();
+
+  const items =
+    experience && experience.length > 0
+      ? experience.map((e) => ({ year: e.year, label: e.label }))
+      : fallbackMilestones;
+
   return (
     <section className="py-20 lg:py-28">
       <div className="mx-auto max-w-[520px] px-6">
@@ -41,7 +49,7 @@ export default function Timeline() {
           <div className="absolute left-[18px] top-2 bottom-2 w-px bg-border" aria-hidden="true" />
 
           <ol className="space-y-10">
-            {milestones.map((item, i) => (
+            {items.map((item, i) => (
               <motion.li
                 key={item.year}
                 custom={i}
