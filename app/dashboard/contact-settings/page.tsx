@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ArtworkPicker from "@/components/dashboard/ArtworkPicker";
+import ImagePicker from "@/components/dashboard/ImagePicker";
 import { useToast } from "@/components/dashboard/ToastProvider";
 import type { ContactConfig } from "@/hooks/usePublicData";
 
@@ -11,6 +11,7 @@ import type { ContactConfig } from "@/hooks/usePublicData";
 // ---------------------------------------------------------------------------
 const defaults: ContactConfig = {
   image_artwork_id: null,
+  image_url: null,
   subtitle: "Contact",
   title: "Get in Touch",
   body_text: "Available for commissions, exhibitions, collaborations, workshops, and landscape projects. I enjoy working with individuals, galleries, brands, and creative studios who value thoughtful visual storytelling.",
@@ -114,7 +115,20 @@ export default function ContactSettingsPage() {
       <div className="space-y-10 max-w-3xl">
         {/* 1. Contact Image */}
         <SectionCard id="section-image" title="1. Contact Image">
-          <ArtworkPicker label="Contact Page Hero Image" selectedId={config.image_artwork_id} onSelect={(id) => update("image_artwork_id", id)} />
+          <ImagePicker
+            label="Contact Page Hero Image"
+            artworkId={config.image_artwork_id}
+            imageUrl={config.image_url}
+            onArtworkIdChange={(id) => {
+              update("image_artwork_id", id);
+              update("image_url", null);
+            }}
+            onImageUrlChange={(url) => {
+              update("image_url", url);
+              update("image_artwork_id", null);
+            }}
+            section="contact"
+          />
         </SectionCard>
 
         {/* 2. Hero Text */}

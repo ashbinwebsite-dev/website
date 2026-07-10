@@ -419,17 +419,21 @@ export interface AboutConfig {
   hero_tagline: string;
   hero_tagline_body: string;
   about_image_artwork_id: string | null;
+  about_image_url: string | null;
   introduction_heading: string;
   introduction_paragraphs: string;
   story1_image_artwork_id: string | null;
+  story1_image_url: string | null;
   story1_label: string;
   story1_title: string;
   story1_paragraphs: string;
   story2_image_artwork_id: string | null;
+  story2_image_url: string | null;
   story2_label: string;
   story2_title: string;
   story2_paragraphs: string;
   story3_image_artwork_id: string | null;
+  story3_image_url: string | null;
   story3_label: string;
   story3_title: string;
   story3_paragraphs: string;
@@ -447,17 +451,21 @@ const defaultAboutConfig: AboutConfig = {
   hero_tagline: "Nature Observer",
   hero_tagline_body: "Painting quiet moments inspired by nature, memory, and light.",
   about_image_artwork_id: null,
+  about_image_url: null,
   introduction_heading: "Living Through Landscapes",
   introduction_paragraphs: "For Ashbin Kafle, landscape painting has never been about documentation. It is a quiet practice of attention — of standing still long enough to feel the atmosphere of a place and translating that feeling into colour, edge, and texture.\n\nGrowing up surrounded by the hills and open skies of Nepal shaped a visual language rooted in observation.",
   story1_image_artwork_id: null,
+  story1_image_url: null,
   story1_label: "The Journey",
   story1_title: "The Journey",
   story1_paragraphs: "Ashbin's connection with nature began in the hills. Long walks, changing seasons, and the way light transforms a familiar view into something new — these early observations became the foundation of his creative practice.\n\nTravel deepened his vocabulary. From the Himalayan foothills to coastal shorelines, each landscape offered a different texture, a different quality of light.",
   story2_image_artwork_id: null,
+  story2_image_url: null,
   story2_label: "The Process",
   story2_title: "The Process",
   story2_paragraphs: "In the studio, the process is deliberate and unhurried. Ashbin works primarily in oil and acrylic on canvas or linen, building layers slowly. Each piece begins with observation — sketches, notes, and colour studies — before the first brushstroke touches the canvas.\n\nTexture is essential. He works with varied brushwork and palette knife techniques, creating surfaces that reward close looking.",
   story3_image_artwork_id: null,
+  story3_image_url: null,
   story3_label: "The Philosophy",
   story3_title: "The Philosophy",
   story3_paragraphs: "Ashbin believes the most powerful landscapes are the quietest ones. In an image-saturated world, stillness becomes a radical choice. His work invites the viewer to slow down, to look longer, to feel rather than just see.\n\nLight is the true subject. Not light as illumination, but light as atmosphere — the way it softens edges, mutes colour, and transforms a scene.",
@@ -483,6 +491,7 @@ export function useAboutConfig() {
 
 export interface ContactConfig {
   image_artwork_id: string | null;
+  image_url: string | null;
   subtitle: string;
   title: string;
   body_text: string;
@@ -491,6 +500,7 @@ export interface ContactConfig {
 
 const defaultContactConfig: ContactConfig = {
   image_artwork_id: null,
+  image_url: null,
   subtitle: "Contact",
   title: "Get in Touch",
   body_text: "Available for commissions, exhibitions, collaborations, workshops, and landscape projects. I enjoy working with individuals, galleries, brands, and creative studios who value thoughtful visual storytelling.",

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ArtworkPicker from "@/components/dashboard/ArtworkPicker";
+import ImagePicker from "@/components/dashboard/ImagePicker";
 import { useToast } from "@/components/dashboard/ToastProvider";
 
 // ---------------------------------------------------------------------------
@@ -11,6 +11,7 @@ import { useToast } from "@/components/dashboard/ToastProvider";
 interface SectionState {
   hero: {
     hero_image_artwork_id: string | null;
+    hero_image_url: string | null;
     headline: string;
     subheadline: string;
     tagline: string;
@@ -30,6 +31,7 @@ interface SectionState {
   };
   about_preview: {
     about_image_artwork_id: string | null;
+    about_image_url: string | null;
     subtitle: string;
     title: string;
     bio_short: string;
@@ -39,6 +41,7 @@ interface SectionState {
   };
   landscape_break: {
     image_artwork_id: string | null;
+    image_url: string | null;
   };
   quote: {
     visible: boolean;
@@ -47,6 +50,7 @@ interface SectionState {
   };
   process: {
     image_artwork_id: string | null;
+    image_url: string | null;
     subtitle: string;
     title: string;
     process_description: string;
@@ -64,6 +68,7 @@ interface SectionState {
   contact_preview: {
     visible: boolean;
     image_artwork_id: string | null;
+    image_url: string | null;
     subtitle: string;
     title: string;
     text: string;
@@ -79,6 +84,7 @@ interface SectionState {
 const defaults: SectionState = {
   hero: {
     hero_image_artwork_id: null,
+    hero_image_url: null,
     headline: "Artist",
     subheadline: "Visual Storyteller",
     tagline: "Nature Observer",
@@ -98,6 +104,7 @@ const defaults: SectionState = {
   },
   about_preview: {
     about_image_artwork_id: null,
+    about_image_url: null,
     subtitle: "About the Artist",
     title: "About",
     bio_short:
@@ -108,6 +115,7 @@ const defaults: SectionState = {
   },
   landscape_break: {
     image_artwork_id: null,
+    image_url: null,
   },
   quote: {
     visible: true,
@@ -116,6 +124,7 @@ const defaults: SectionState = {
   },
   process: {
     image_artwork_id: null,
+    image_url: null,
     subtitle: "Studio Practice",
     title: "The Process",
     process_description:
@@ -134,6 +143,7 @@ const defaults: SectionState = {
   contact_preview: {
     visible: true,
     image_artwork_id: null,
+    image_url: null,
     subtitle: "Get in Touch",
     title: "Let's Create\nSomething Together",
     text: "Available for commissions, exhibitions, collaborations, and landscape projects. Currently accepting new enquiries and would welcome a conversation about your project.",
@@ -745,12 +755,17 @@ export default function HomepageSettingsPage() {
         {/* 1. Hero Section */}
         {/* ================================================================= */}
         <SectionCard id="section-hero" title="1. Hero Section">
-          <ArtworkPicker
+          <ImagePicker
             label="Hero Background Image"
-            selectedId={hero.hero_image_artwork_id}
-            onSelect={(id) =>
-              setHero((prev) => ({ ...prev, hero_image_artwork_id: id }))
+            artworkId={hero.hero_image_artwork_id}
+            imageUrl={hero.hero_image_url}
+            onArtworkIdChange={(id) =>
+              setHero((prev) => ({ ...prev, hero_image_artwork_id: id, hero_image_url: null }))
             }
+            onImageUrlChange={(url) =>
+              setHero((prev) => ({ ...prev, hero_image_url: url, hero_image_artwork_id: null }))
+            }
+            section="hero"
           />
           <div className="grid gap-6 sm:grid-cols-2">
             <Field
@@ -883,12 +898,17 @@ export default function HomepageSettingsPage() {
         {/* 3. About Preview */}
         {/* ================================================================= */}
         <SectionCard id="section-about-preview" title="3. About Preview Section">
-          <ArtworkPicker
+          <ImagePicker
             label="About Image"
-            selectedId={aboutPreview.about_image_artwork_id}
-            onSelect={(id) =>
-              setAboutPreview((prev) => ({ ...prev, about_image_artwork_id: id }))
+            artworkId={aboutPreview.about_image_artwork_id}
+            imageUrl={aboutPreview.about_image_url}
+            onArtworkIdChange={(id) =>
+              setAboutPreview((prev) => ({ ...prev, about_image_artwork_id: id, about_image_url: null }))
             }
+            onImageUrlChange={(url) =>
+              setAboutPreview((prev) => ({ ...prev, about_image_url: url, about_image_artwork_id: null }))
+            }
+            section="about-preview"
           />
           <Field
             label="Subtitle"
@@ -952,12 +972,17 @@ export default function HomepageSettingsPage() {
         {/* 4. Landscape Break */}
         {/* ================================================================= */}
         <SectionCard id="section-landscape" title="4. Landscape Break Image">
-          <ArtworkPicker
+          <ImagePicker
             label="Landscape Image"
-            selectedId={landscapeBreak.image_artwork_id}
-            onSelect={(id) =>
-              setLandscapeBreak((prev) => ({ ...prev, image_artwork_id: id }))
+            artworkId={landscapeBreak.image_artwork_id}
+            imageUrl={landscapeBreak.image_url}
+            onArtworkIdChange={(id) =>
+              setLandscapeBreak((prev) => ({ ...prev, image_artwork_id: id, image_url: null }))
             }
+            onImageUrlChange={(url) =>
+              setLandscapeBreak((prev) => ({ ...prev, image_url: url, image_artwork_id: null }))
+            }
+            section="landscape-break"
           />
         </SectionCard>
 
@@ -993,12 +1018,17 @@ export default function HomepageSettingsPage() {
         {/* 6. Process Section */}
         {/* ================================================================= */}
         <SectionCard id="section-process" title="6. Process Section">
-          <ArtworkPicker
+          <ImagePicker
             label="Process Image"
-            selectedId={process.image_artwork_id}
-            onSelect={(id) =>
-              setProcess((prev) => ({ ...prev, image_artwork_id: id }))
+            artworkId={process.image_artwork_id}
+            imageUrl={process.image_url}
+            onArtworkIdChange={(id) =>
+              setProcess((prev) => ({ ...prev, image_artwork_id: id, image_url: null }))
             }
+            onImageUrlChange={(url) =>
+              setProcess((prev) => ({ ...prev, image_url: url, image_artwork_id: null }))
+            }
+            section="process"
           />
           <Field
             label="Subtitle"
@@ -1117,12 +1147,17 @@ export default function HomepageSettingsPage() {
               setContactPreview((prev) => ({ ...prev, visible: v }))
             }
           />
-          <ArtworkPicker
+          <ImagePicker
             label="Contact Image"
-            selectedId={contactPreview.image_artwork_id}
-            onSelect={(id) =>
-              setContactPreview((prev) => ({ ...prev, image_artwork_id: id }))
+            artworkId={contactPreview.image_artwork_id}
+            imageUrl={contactPreview.image_url}
+            onArtworkIdChange={(id) =>
+              setContactPreview((prev) => ({ ...prev, image_artwork_id: id, image_url: null }))
             }
+            onImageUrlChange={(url) =>
+              setContactPreview((prev) => ({ ...prev, image_url: url, image_artwork_id: null }))
+            }
+            section="contact-preview"
           />
           <Field
             label="Subtitle"

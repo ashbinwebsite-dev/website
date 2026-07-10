@@ -22,15 +22,15 @@ export default function AboutPage() {
   const { data: story2Artwork } = useArtworkById(section?.story2_image_artwork_id ?? null);
   const { data: story3Artwork } = useArtworkById(section?.story3_image_artwork_id ?? null);
 
-  const aboutImageUrl = aboutArtwork?.image_url || "";
-  const aboutImageLoading = !aboutArtwork && (section?.about_image_artwork_id) ? true : false;
+  const aboutImageUrl = aboutArtwork?.image_url || section?.about_image_url || "";
+  const aboutImageLoading = (!aboutArtwork && (section?.about_image_artwork_id !== null)) ? true : false;
   const introHeading = section?.introduction_heading || "Living Through Landscapes";
   const introParagraphs = (section?.introduction_paragraphs || "For Ashbin Kafle, landscape painting has never been about documentation. It is a quiet practice of attention.").split("\n\n").filter(Boolean);
 
   const story1 = {
     label: section?.story1_label || "The Journey",
     title: section?.story1_title || "The Journey",
-    imageSrc: story1Artwork?.image_url || "",
+    imageSrc: story1Artwork?.image_url || section?.story1_image_url || "",
     imageAlt: story1Artwork?.image_alt || (story1Artwork?.title || "Mountain landscape at sunrise"),
     paragraphs: (section?.story1_paragraphs || "").split("\n\n").filter(Boolean),
   };
@@ -38,7 +38,7 @@ export default function AboutPage() {
   const story2 = {
     label: section?.story2_label || "The Process",
     title: section?.story2_title || "The Process",
-    imageSrc: story2Artwork?.image_url || "",
+    imageSrc: story2Artwork?.image_url || section?.story2_image_url || "",
     imageAlt: story2Artwork?.image_alt || (story2Artwork?.title || "Artist working in studio"),
     paragraphs: (section?.story2_paragraphs || "").split("\n\n").filter(Boolean),
   };
@@ -46,7 +46,7 @@ export default function AboutPage() {
   const story3 = {
     label: section?.story3_label || "The Philosophy",
     title: section?.story3_title || "The Philosophy",
-    imageSrc: story3Artwork?.image_url || "",
+    imageSrc: story3Artwork?.image_url || section?.story3_image_url || "",
     imageAlt: story3Artwork?.image_alt || (story3Artwork?.title || "Calm landscape painting"),
     paragraphs: (section?.story3_paragraphs || "").split("\n\n").filter(Boolean),
   };

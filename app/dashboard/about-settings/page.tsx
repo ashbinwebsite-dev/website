@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ArtworkPicker from "@/components/dashboard/ArtworkPicker";
+import ImagePicker from "@/components/dashboard/ImagePicker";
 import { useToast } from "@/components/dashboard/ToastProvider";
 import type { AboutConfig } from "@/hooks/usePublicData";
 
@@ -13,17 +13,21 @@ const defaults: AboutConfig = {
   hero_tagline: "Nature Observer",
   hero_tagline_body: "Painting quiet moments inspired by nature, memory, and light.",
   about_image_artwork_id: null,
+  about_image_url: null,
   introduction_heading: "Living Through Landscapes",
   introduction_paragraphs: "For Ashbin Kafle, landscape painting has never been about documentation. It is a quiet practice of attention — of standing still long enough to feel the atmosphere of a place and translating that feeling into colour, edge, and texture.\n\nGrowing up surrounded by the hills and open skies of Nepal shaped a visual language rooted in observation.",
   story1_image_artwork_id: null,
+  story1_image_url: null,
   story1_label: "The Journey",
   story1_title: "The Journey",
   story1_paragraphs: "Ashbin's connection with nature began in the hills. Long walks, changing seasons, and the way light transforms a familiar view into something new — these early observations became the foundation of his creative practice.\n\nTravel deepened his vocabulary. From the Himalayan foothills to coastal shorelines, each landscape offered a different texture, a different quality of light.",
   story2_image_artwork_id: null,
+  story2_image_url: null,
   story2_label: "The Process",
   story2_title: "The Process",
   story2_paragraphs: "In the studio, the process is deliberate and unhurried. Ashbin works primarily in oil and acrylic on canvas or linen, building layers slowly. Each piece begins with observation — sketches, notes, and colour studies — before the first brushstroke touches the canvas.\n\nTexture is essential. He works with varied brushwork and palette knife techniques, creating surfaces that reward close looking.",
   story3_image_artwork_id: null,
+  story3_image_url: null,
   story3_label: "The Philosophy",
   story3_title: "The Philosophy",
   story3_paragraphs: "Ashbin believes the most powerful landscapes are the quietest ones. In an image-saturated world, stillness becomes a radical choice. His work invites the viewer to slow down, to look longer, to feel rather than just see.\n\nLight is the true subject. Not light as illumination, but light as atmosphere — the way it softens edges, mutes colour, and transforms a scene.",
@@ -133,7 +137,20 @@ export default function AboutSettingsPage() {
         </SectionCard>
 
         <SectionCard id="section-about-image" title="2. About Image">
-          <ArtworkPicker label="About Page Portrait Image" selectedId={config.about_image_artwork_id} onSelect={(id) => update("about_image_artwork_id", id)} />
+          <ImagePicker
+            label="About Page Portrait Image"
+            artworkId={config.about_image_artwork_id}
+            imageUrl={config.about_image_url}
+            onArtworkIdChange={(id) => {
+              update("about_image_artwork_id", id);
+              update("about_image_url", null);
+            }}
+            onImageUrlChange={(url) => {
+              update("about_image_url", url);
+              update("about_image_artwork_id", null);
+            }}
+            section="about"
+          />
         </SectionCard>
 
         <SectionCard id="section-intro" title="3. Introduction Section">
@@ -142,7 +159,20 @@ export default function AboutSettingsPage() {
         </SectionCard>
 
         <SectionCard id="section-story1" title="4. Story: The Journey">
-          <ArtworkPicker label="Story Image" selectedId={config.story1_image_artwork_id} onSelect={(id) => update("story1_image_artwork_id", id)} />
+          <ImagePicker
+            label="Story Image — The Journey"
+            artworkId={config.story1_image_artwork_id}
+            imageUrl={config.story1_image_url}
+            onArtworkIdChange={(id) => {
+              update("story1_image_artwork_id", id);
+              update("story1_image_url", null);
+            }}
+            onImageUrlChange={(url) => {
+              update("story1_image_url", url);
+              update("story1_image_artwork_id", null);
+            }}
+            section="about-story1"
+          />
           <div className="grid gap-6 sm:grid-cols-2">
             <Field label="Section Label" value={config.story1_label} onChange={(v) => update("story1_label", v)} placeholder="The Journey" />
             <Field label="Title" value={config.story1_title} onChange={(v) => update("story1_title", v)} placeholder="The Journey" />
@@ -151,7 +181,20 @@ export default function AboutSettingsPage() {
         </SectionCard>
 
         <SectionCard id="section-story2" title="5. Story: The Process">
-          <ArtworkPicker label="Story Image" selectedId={config.story2_image_artwork_id} onSelect={(id) => update("story2_image_artwork_id", id)} />
+          <ImagePicker
+            label="Story Image — The Process"
+            artworkId={config.story2_image_artwork_id}
+            imageUrl={config.story2_image_url}
+            onArtworkIdChange={(id) => {
+              update("story2_image_artwork_id", id);
+              update("story2_image_url", null);
+            }}
+            onImageUrlChange={(url) => {
+              update("story2_image_url", url);
+              update("story2_image_artwork_id", null);
+            }}
+            section="about-story2"
+          />
           <div className="grid gap-6 sm:grid-cols-2">
             <Field label="Section Label" value={config.story2_label} onChange={(v) => update("story2_label", v)} placeholder="The Process" />
             <Field label="Title" value={config.story2_title} onChange={(v) => update("story2_title", v)} placeholder="The Process" />
@@ -160,7 +203,20 @@ export default function AboutSettingsPage() {
         </SectionCard>
 
         <SectionCard id="section-story3" title="6. Story: The Philosophy">
-          <ArtworkPicker label="Story Image" selectedId={config.story3_image_artwork_id} onSelect={(id) => update("story3_image_artwork_id", id)} />
+          <ImagePicker
+            label="Story Image — The Philosophy"
+            artworkId={config.story3_image_artwork_id}
+            imageUrl={config.story3_image_url}
+            onArtworkIdChange={(id) => {
+              update("story3_image_artwork_id", id);
+              update("story3_image_url", null);
+            }}
+            onImageUrlChange={(url) => {
+              update("story3_image_url", url);
+              update("story3_image_artwork_id", null);
+            }}
+            section="about-story3"
+          />
           <div className="grid gap-6 sm:grid-cols-2">
             <Field label="Section Label" value={config.story3_label} onChange={(v) => update("story3_label", v)} placeholder="The Philosophy" />
             <Field label="Title" value={config.story3_title} onChange={(v) => update("story3_title", v)} placeholder="The Philosophy" />

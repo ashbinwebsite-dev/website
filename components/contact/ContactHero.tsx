@@ -10,7 +10,7 @@ export default function ContactHero() {
   const { data: config } = useContactConfig();
   const { data: contactArtwork } = useArtworkById(config?.image_artwork_id ?? null);
 
-  const imageUrl = contactArtwork?.image_url || "";
+  const imageUrl = contactArtwork?.image_url || config?.image_url || "";
   const imageAlt = contactArtwork?.image_alt || (contactArtwork?.title || "Contact");
   const imageLoading = !contactArtwork && !!config?.image_artwork_id;
   const subtitle = config?.subtitle || "Contact";
