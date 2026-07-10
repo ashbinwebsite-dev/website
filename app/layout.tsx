@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Ashbin Kafle — Artist",
   description:
     "A premium portfolio experience for artist Ashbin Kafle. Minimal, editorial, and immersive.",
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export default function RootLayout({

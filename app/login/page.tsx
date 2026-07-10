@@ -97,13 +97,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-8 text-center text-xs text-foreground/50">
-          Don&rsquo;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="text-foreground/70 hover:text-foreground transition-colors duration-300"
-          >
-            Create one
-          </Link>
+          Accounts are created by invitation only.
         </p>
       </div>
     </div>

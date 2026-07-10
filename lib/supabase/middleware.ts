@@ -4,7 +4,6 @@ import { NextResponse, type NextRequest } from "next/server";
 // Routes that don't require auth session refresh
 const PUBLIC_ROUTES = [
   "/login",
-  "/signup",
   "/auth/confirm",
   "/auth/error",
   "/_next",
