@@ -51,7 +51,7 @@ export default function Header() {
     <header
       className={clsx(
         "fixed inset-x-0 top-0 z-50 h-[80px] transition-all duration-500 ease-[0.22,1,0.36,1]",
-        scrolled
+        scrolled && !menuOpen
           ? "bg-white/76 backdrop-blur-xl border-b border-border/70"
           : "bg-transparent border-b border-transparent",
       )}
@@ -67,7 +67,7 @@ export default function Header() {
               href={item.href}
               label={item.label}
               active={activeSection === item.href.slice(1)}
-              scrolled={scrolled}
+              scrolled={scrolled && menuOpen}
             />
           ))}
         </nav>
